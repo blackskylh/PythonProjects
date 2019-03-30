@@ -1,0 +1,167 @@
+{% load staticfiles %}
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>{{ SITE_NAME }}</title>
+<meta name="keywords" content="{{ SITE_NAME }}" />
+<meta name="description" content="{{ SITE_DESC }}" />
+<link href="{% static 'css/base.css' %}" rel="stylesheet">
+<link href="{% static 'css/index.css' %}" rel="stylesheet">
+{% block custom_css %}{% endblock %}
+<script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/sliders.js' %}"></script>
+<!--[if lt IE 9]>
+<script src="js/modernizr.js"></script>
+<![endif]-->
+{% block custom_js %}{% endblock %}
+</head>
+<body>
+<header>
+  <div class="logo">
+      <h1>{{ SITE_NAME }}</h1>
+      <p>{{ SITE_DESC }}</p>
+  </div>
+  <nav id="topnav" >
+  <div style="width:1000px;">
+    <ul>
+      <a href="/">首页</a>
+      {% for category in category_list %}
+      <a href="{% url 'category' %}?cid={{ category.id }}">{{ category.name }}</a>
+      {% endfor %}
+      <div class="f_r">
+       {% if not request.user.is_authenticated %}
+       <a href="/login" style="padding: 0 4px; ">登陆</a>
+       <a href="/reg" style="padding:0  4px; ">注册</a>
+    {% else %}
+     <a href="/admin/" style="padding: 0 4px; ">欢迎您！ <b>{{ request.user.username }}</b>!</a>&nbsp;<a href="{% url 'logout' %}">注销</a>
+    {% endif %}
+
+       </div>
+    </ul>
+  </div>
+    <script src="{% static 'js/nav.js' %}"></script>
+  </nav>
+</header>
+<article>
+  <div class="l_box f_l">
+      {% block left_content %}{% endblock %}
+  </div>
+  <div class="r_box f_r">
+    <div class="tit01">
+      <h3>点击搜索</h3>
+      <div class="gzwm">
+      <form  method="POST" action="/search/" > 
+      <br>
+      {% csrf_token %}
+      <input type="text" name="wd"  placeholder="请输入关键字...">&emsp;
+      <input type="submit" id="testButton" name="submit" value="搜索">
+      </form>
+      </div>
+    </div>
+    <!--tit01 end-->
+    <div class="tit01">
+      <h3>我的其他空间</h3>
+      <div class="gzwm">
+        <ul>
+          <li><a class="xlwb" href="https://weibo.com/u/5595645759/home?wvr=5&sudaref=graph.qq.com" target="_blank">新浪微博</a></li>
+          <li><a class="txwb" href="#" target="_blank">腾讯微博</a></li>
+          <li><a class="rss" href="https://github.com/calmplay" target="_blank">我的git</a></li>
+          <li><a class="wx" href="https://mail.qq.com/cgi-bin/frame_html?sid=NfuDtwkSxwcfbj5l&r=06654a505ab647307ab76d931e737284">QQ邮箱</a></li>
+        </ul>
+      </div>
+    </div>
+    <!--tit01 end-->
+
+    <div class="moreSelect" id="lp_right_select">
+      <script>
+window.onload = function ()
+{
+  var oLi = document.getElementById("tab").getElementsByTagName("li");
+  var oUl = document.getElementById("ms-main").getElementsByTagName("div");
+
+  for(var i = 0; i < oLi.length; i++)
+  {
+    oLi[i].index = i;
+    oLi[i].onmouseover = function ()
+    {
+      for(var n = 0; n < oLi.length; n++) oLi[n].className="";
+      this.className = "cur";
+      for(var n = 0; n < oUl.length; n++) oUl[n].style.display = "none";
+      oUl[this.index].style.display = "block"
+    }
+  }
+}
+</script>
+
+
+      <div class="ms-top">
+        <ul class="hd" id="tab">
+          <li class="cur"><a href="/">热门文章</a></li>
+        </ul>
+      </div>
+      <div class="ms-main" id="ms-main">
+        <div style="display: block;" class="bd bd-news" >
+          <ul>
+
+            {% for article in article_comment_list %}
+            <li><a href="{% url 'article' %}?id={{ article.id }}" target="_blank">{{ article.title | slice:':15' }}</a></li>
+            {% endfor %}
+            
+          </ul>
+        </div>
+
+
+       
+
+      </div>
+      <!-- 热门评论 -->
+      <!--ms-main end -->
+    </div>
+    <!--切换卡 moreSelect end -->
+
+    <div class="cloud">
+      <h3>标签云</h3>
+      <ul>
+      {% for tag in tag_list %}
+        <li><a href="/">{{  tag.name }}</a></li>
+     {%  endfor %}
+      </ul>
+    </div>
+    <div class="links">
+      <h3>猜你想要</h3>
+      <ul>
+        <li><a href="http://i.tianqi.com/index.php?c=code&id=12&icon=1&num=5">天气速报</a></li>
+        <li><a href="http://xian.house.qq.com/l/fczx/fcjryw.htm">今日要闻</a></li>
+        <li><a href="https://www.bilibili.com/">哔哩哔哩</a></li>
+      </ul>
+    </div>
+    <div class="tuwen">
+      <h3>文章归档</h3>
+      <ul>
+        {% for archive in archive_list %}
+        <li>
+          <p><span class="tutime font-size-18"><a href='{% url 'archive' %}?year={{ archive | slice:":4" }}&month={{ archive | slice:"5:7" }}'>{{ archive }}</a></span></p>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    
+  </div>
+  <!--r_box end -->
+</article>
+<footer>
+  <div style="margin-left:350px; float:left;" >
+  <p class="ft-copyright">{{ SITE_NAME }} &copy; 2017-2018 ICP备000000001号-1</p>
+  </div>
+  <div id="tbox">  <a id="gotop" href="javascript:void(0)"></a> </div>
+  <script type="text/javascript">
+    $(document).ready(function(){
+        $('#gotop').click(function(){
+            $('html,body').animate({scrollTop:0},'slow');
+        });
+    });
+</script>
+</footer>
+</body>
+</html>
